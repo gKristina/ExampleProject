@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Pumbaa": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Terminal\\Pumbaa\\ECash.Pumbaa.exe",
+      "commandLineArgs": "-p \"C:\\VS_Projects\\InfoClinica\\InfoClinica.WebApi\\plugins.json\""
+    },
+    "Профиль 1": {
+      "commandName": "Executable"
+    }
+  }
+}
