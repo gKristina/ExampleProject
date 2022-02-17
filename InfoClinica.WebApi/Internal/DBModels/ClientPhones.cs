@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace ECash.InfoClinica.Database.Internal.Models
 {
     [Table("CLPHONES")]
-    public class ClientPhonesDB
+    public class ClientPhones
     {
         [Key]
         [Column("CLPHONEID")]

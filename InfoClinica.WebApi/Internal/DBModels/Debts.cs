@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ECash.InfoClinica.WebApi.Internal.DBModels
 {
-    public class DebtsDB
+    public class Debts
     {
         [Column("ORDERNO")]
         public long OrderCode { get; set; }

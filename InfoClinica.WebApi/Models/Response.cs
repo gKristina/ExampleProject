@@ -8,20 +8,8 @@ namespace ECash.InfoClinica.WebApi.Models
 {
     public class Response<T>
     {
-        public bool Success { get; set; }
-        public string Error { get; set; }  
-        public List<T> Result { get; set; }   
-
-        public Response (bool success, string error)
-        {
-            Success = success;
-            Error = error;
-        }
-
-        public Response(bool success, List<T> result)
-        {
-            Success = success;
-            Result = result;
-        }
+        public bool Success { get; init; }
+        public string Error { get; init; }  
+        public List<T> Result { get; init; }   
     }
 }

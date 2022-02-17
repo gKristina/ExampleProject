@@ -38,5 +38,8 @@ namespace ECash.InfoClinica.WebApi.Models
 
         [Required]
         public double DebtAmount { get; set; }
+
+        [Required]
+        public double Paid { get; set; }
     }
 }

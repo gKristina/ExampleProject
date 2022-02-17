@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Ecash.InfoClinica.Database.Models
 {
     [Table("CLIENTS")]
-    public class ClientsDB
+    public class Clients
     {
         [Key]
         [Column("PCODE")]

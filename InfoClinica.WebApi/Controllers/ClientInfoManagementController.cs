@@ -49,32 +49,47 @@ namespace ECash.InfoClinica.WebApi.Controllers
         /// <summary>
         /// Возвращает список клиентов по префиксу и номеру телефона
         /// </summary>
+        /// <param name="prefix"></param>
+        /// <param name="phone"></param>
         /// <returns></returns>
-        /// 
         [Route("getClientInfo")]
         [HttpGet]
         public async Task<Response<Client>> GetClientInfo(string prefix, string phone)
         {
-            #region [log]
-            log.LogTrace("ENTER {0}", nameof(GetClientInfo));
-            #endregion
-            if (!string.IsNullOrEmpty(prefix) && !string.IsNullOrEmpty(phone))
+            try
             {
+                #region [log]
+                log.LogTrace("ENTER {0}", nameof(GetClientInfo));
+                #endregion
+                if (string.IsNullOrEmpty(prefix) || string.IsNullOrEmpty(phone))
+                {
+                    #region [log]
+                    log.LogTrace("LEAVE {0}", nameof(GetClientInfo));
+                    #endregion
+                    return new Response<Client> { Success = false, Error = "Parameters prefix and phone must not be empty" };
+                }
                 var clients = await _clientInfoManagementService.FindClientsInfoByPhone(prefix, phone);
                 #region [log]
                 log.LogTrace("LEAVE {0}", nameof(GetClientInfo));
                 #endregion
-                return new Response<Client>(true, clients);
+                return new Response<Client> { Success = true, Result = clients };
             }
-            return new Response<Client>(false, "Parameters prefix and phone must not be empty");
+            catch (Exception ex)
+            {
+                #region [log]
+                log.LogTrace("LEAVE {0}", nameof(GetClientInfo));
+                #endregion
+                return new Response<Client> { Success = false, Error = ex.Message };
+            }
+           
         }
             
 
         /// <summary>
-        /// Возвращает список задолженостей клиента по уникальному коду
+        /// Возвращает список всех долгов клиента
         /// </summary>
+        /// <param name="clientCode">Уникальный код клиента</param>
         /// <returns></returns>
-        /// 
         [Route("getDebts")]
         [HttpGet]
         public async Task<Response<Debt>> GetDebts(string clientCode)
@@ -82,38 +97,59 @@ namespace ECash.InfoClinica.WebApi.Controllers
             #region [log]
             log.LogTrace("ENTER {0}", nameof(GetDebts));
             #endregion
-            if(!String.IsNullOrEmpty(clientCode))
+            try
             {
+                if (String.IsNullOrEmpty(clientCode))
+                {
+                    #region [log]
+                    log.LogTrace("LEAVE {0}", nameof(GetDebts));
+                    #endregion
+                    return new Response<Debt> { Success = false, Error = "Parameter clientCode must not be empty" };
+                }
                 var debts = await _clientInfoManagementService.GetDebtList(int.Parse(clientCode));
                 #region [log]
                 log.LogTrace("LEAVE {0}", nameof(GetDebts));
                 #endregion
-                return new Response<Debt>(true, debts);
+                return new Response<Debt> { Success = true, Result = debts };
             }
-            return new Response<Debt>(false, "Parameter clientCode must not be empty");
+            catch (Exception ex)
+            {
+                #region [log]
+                log.LogTrace("LEAVE {0}", nameof(GetDebts));
+                #endregion
+                return new Response<Debt> { Success = false, Error = ex.Message };
+            }
         }
 
 
         /// <summary>
-        /// Возвращает данные пользователя с заданным идентификатором
+        /// Производит полную оплату одного приема
         /// </summary>
-        /// <param name="userId">Идентификатор пользователя</param>
+        /// <param name="info">Информация по оплачиваемому приему</param>
         /// <returns></returns>
-        [Route("pay")]
+        [Route("fullPay")]
         [HttpPost]
-        public async Task<Response<PaymentInfo>> PayTreatment(PaymentInfo info)
+        public async Task<Response<bool>> PayTreatment(PaymentInfo info)
         {
-            #region [log]
-            log.LogTrace("ENTER {0}", nameof(PayTreatment));
-            #endregion
-
-//            var paymentResult = 
-          
-
-            #region [log]
-            log.LogTrace("LEAVE {0}", nameof(PayTreatment));
-            #endregion
-            return null;
+            try
+            {
+                #region [log]
+                log.LogTrace("ENTER {0}", nameof(PayTreatment));
+                #endregion
+                var paymentResult = await _clientInfoManagementService.MakeFullReceptionPayment(info);
+                #region [log]
+                log.LogTrace("LEAVE {0}", nameof(PayTreatment));
+                #endregion
+                return new Response<bool> { Success = paymentResult };
+            }
+            catch (Exception ex)
+            {
+                #region [log]
+                log.LogTrace("LEAVE {0}", nameof(PayTreatment));
+                #endregion
+                return new Response<bool> { Success =  false, Error = ex.Message };
+            }
+            
         }
         #endregion
     }

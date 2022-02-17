@@ -8,23 +8,11 @@ namespace ECash.InfoClinica.WebApi.Models
 {
     public class Client
     {
-        public long Code { get; set; }
+        public long Code { get; init; }
+        public string LastName { get; init; }
+        public string FirstName { get; init; }
+        public string MiddleName { get; init; }
+        public string FullName { get; init; }
 
-        public string LastName { get; set; }
-
-        public string FirstName { get; set; }
-
-        public string MiddleName { get; set; }
-
-        public string FullName { get; set; }
-
-        public Client (long code, string lastName, string firstName, string middleName, string fullName)
-        {
-            Code = code;
-            LastName = lastName;
-            FirstName = firstName;
-            MiddleName = middleName;
-            FullName = fullName;
-        }
     }
 }

@@ -8,30 +8,15 @@ namespace ECash.InfoClinica.WebApi.Models
 {
     public class Debt
     {
-        public long OrderCode { get; set; }
-        public long TreatmentCode { get; set; }
-        public DateTime TreatmentDate { get; set; }
-        public int DebtDaysCount { get; set; }
-        public long DoctorCode { get; set; }
-        public long ClientCode { get; set; }
-        public string FullName { get; set; }
-        public string DoctorName { get; set; }
-        public double TreatmentAmount { get; set; }
-        public double DebtAmount { get; set; }
-
-        public Debt(long orderCode, long treadCodeNumber, DateTime treadDate,int debtsDaysCount, long doctorCode, 
-            long clientCode, string fullName, string doctorName, double treatAmount, double debtAmount )
-        {
-            OrderCode = orderCode;
-            TreatmentCode = treadCodeNumber;
-            TreatmentDate = treadDate;
-            DebtDaysCount = debtsDaysCount;
-            DoctorCode = doctorCode;
-            FullName = fullName;
-            ClientCode = clientCode;
-            DoctorName = doctorName;
-            TreatmentAmount = treatAmount;
-            DebtAmount = debtAmount;
-        }
+        public long OrderCode { get; init; }
+        public long TreatmentCode { get; init; }
+        public DateTime TreatmentDate { get; init; }
+        public int DebtDaysCount { get; init; }
+        public long DoctorCode { get; init; }
+        public long ClientCode { get; init; }
+        public string FullName { get; init; }
+        public string DoctorName { get; init; }
+        public double TreatmentAmount { get; init; }
+        public double DebtAmount { get; init; }
     }
 }
