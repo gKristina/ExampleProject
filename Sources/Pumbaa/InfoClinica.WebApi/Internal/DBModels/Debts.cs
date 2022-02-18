@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ECash.InfoClinica.WebApi.Internal.DBModels
 {
@@ -38,7 +34,5 @@ namespace ECash.InfoClinica.WebApi.Internal.DBModels
 
         [Column("DOLGRUB")]
         public double DebtAmount { get; set; }
-
-
     }
 }

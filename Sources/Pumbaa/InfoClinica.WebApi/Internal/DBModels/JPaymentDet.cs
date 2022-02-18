@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ECash.InfoClinica.WebApi.Internal.DBModels
 {
-    [Table("JPAYMDET")]
     public class JPaymentDet
     {
         [Key]
@@ -74,5 +69,8 @@ namespace ECash.InfoClinica.WebApi.Internal.DBModels
 
         [Column("TRANSACTID")]
         public long TransactionId { get; init; }
+
+        [Column("OPERTYPE")]
+        public long OperationType { get; init; }
     }
 }

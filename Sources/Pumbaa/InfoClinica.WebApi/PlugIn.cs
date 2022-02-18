@@ -1,6 +1,6 @@
-﻿using ECash.Vole.MvcPlugIn;
+﻿using ECash.InfoClinica.Database;
+using ECash.Vole.MvcPlugIn;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -18,21 +18,6 @@ namespace ECash.InfoClinica.WebApi
 
         #region Overrides
         /// <summary>
-        /// Регистрирует службы в коллекции служб
-        /// </summary>
-        /// <param name="registry">Коллекция регистраций служб</param>
-        /// <param name="config">Конфигурация приложения</param>
-        public override void ConfigureServices(IServiceCollection registry, IConfiguration config)
-        {
-            #region [log]
-            log.LogTrace("ENTER {0}", nameof(ConfigureServices));
-            #endregion
-            base.ConfigureServices(registry, config);
-            #region [log]
-            log.LogTrace("LEAVE {0}", nameof(ConfigureServices));
-            #endregion
-        }
-        /// <summary>
         /// Настраивает MVC
         /// </summary>
         /// <param name="builder">Настройщик MVC</param>
@@ -41,16 +26,12 @@ namespace ECash.InfoClinica.WebApi
             #region [log]
             log.LogTrace("ENTER {0}", nameof(ConfigureMvc));
             #endregion
-
             base.ConfigureMvc(builder);
-
+            builder.Services.AddScoped<ClientInfoManagementService>();
             builder.AddApplicationPart(typeof(PlugIn).Assembly);
-
-
             #region [log]
             log.LogTrace("LEAVE {0}", nameof(ConfigureMvc));
             #endregion
-
         }
         #endregion
 

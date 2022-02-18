@@ -2,14 +2,10 @@
 using Ecash.InfoClinica.Database.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ECash.InfoClinica.Database.Internal.Data;
 using ECash.InfoClinica.Database.Internal.Models;
 using ECash.InfoClinica.WebApi.Internal.DBModels;
-using Constants = ECash.InfoClinica.WebApi.Internal.Utils.Constants;
+using ECash.InfoClinica.WebApi.Internal;
 
 namespace Ecash.InfoClinica.Database.Data 
 {
@@ -28,12 +24,13 @@ namespace Ecash.InfoClinica.Database.Data
         #endregion
 
         #region DBSets
-        public DbSet<Clients> Clients { get; set; }
-        public DbSet<ClientPhones> ClientPhones { get; set; }
-        public DbSet<TransactionList> TransactionList { get; set; }
-        public DbSet<LoseCredit> LoseCredit { get; set; }
-        public DbSet<JPPayments> JPPayments { get; set; }
-        public DbSet<JPaymentDet> JPaymentDet { get; set; }
+        internal DbSet<Clients> Clients { get; set; }
+        internal DbSet<ClientPhones> ClientPhones { get; set; }
+        internal DbSet<TransactionList> TransactionList { get; set; }
+        internal DbSet<LoseCredit> LoseCredit { get; set; }
+        internal DbSet<JPPayments> JPPayments { get; set; }
+        internal DbSet<JPaymentDet> JPaymentDet { get; set; }
+        internal DbSet<UpfrontPayment> UpfrontPayment { get; set; }
         #endregion
 
         #region Overrides
@@ -54,6 +51,7 @@ namespace Ecash.InfoClinica.Database.Data
             modelBuilder.Entity<JPPayments>().ToTable("JPPAYMENTS");
             modelBuilder.Entity<JPaymentDet>().ToTable("JPAYMDET");
             modelBuilder.Entity<TransactionList>().ToTable("TRANSACTLIST");
+            modelBuilder.Entity<UpfrontPayment>().ToTable("CLAVANS");
 
             base.OnModelCreating(modelBuilder);
         }

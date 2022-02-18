@@ -1,12 +1,9 @@
-﻿using AutoMapper;
-using ECash.InfoClinica.Database;
+﻿using ECash.InfoClinica.Database;
 using ECash.InfoClinica.WebApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ECash.InfoClinica.WebApi.Controllers
@@ -16,7 +13,7 @@ namespace ECash.InfoClinica.WebApi.Controllers
     /// </summary>
     [ApiController]
     [Produces("application/json")]
-    [Route("cm")]
+    [Route("clientsManagment")]
     public class ClientInfoManagementController : ControllerBase
     {
         #region Private fields
@@ -54,34 +51,34 @@ namespace ECash.InfoClinica.WebApi.Controllers
         /// <returns></returns>
         [Route("getClientInfo")]
         [HttpGet]
-        public async Task<Response<Client>> GetClientInfo(string prefix, string phone)
+        public async Task<DataListResponse<Client>> GetClientInfo(string prefix, string phone)
         {
+            #region [log]
+            log.LogTrace("ENTER {0}", nameof(GetClientInfo));
+            #endregion
+            var success = false;
+            var error = string.Empty;
+            var result = new List<Client>();
             try
             {
-                #region [log]
-                log.LogTrace("ENTER {0}", nameof(GetClientInfo));
-                #endregion
                 if (string.IsNullOrEmpty(prefix) || string.IsNullOrEmpty(phone))
                 {
-                    #region [log]
-                    log.LogTrace("LEAVE {0}", nameof(GetClientInfo));
-                    #endregion
-                    return new Response<Client> { Success = false, Error = "Parameters prefix and phone must not be empty" };
+                    error = "Parameters prefix and phone must not be empty";
                 }
-                var clients = await _clientInfoManagementService.FindClientsInfoByPhone(prefix, phone);
-                #region [log]
-                log.LogTrace("LEAVE {0}", nameof(GetClientInfo));
-                #endregion
-                return new Response<Client> { Success = true, Result = clients };
+                else 
+                {
+                    result = await _clientInfoManagementService.FindClientsInfoByPhone(prefix, phone);
+                    success = true;
+                }
             }
             catch (Exception ex)
             {
-                #region [log]
-                log.LogTrace("LEAVE {0}", nameof(GetClientInfo));
-                #endregion
-                return new Response<Client> { Success = false, Error = ex.Message };
+                error = ex.Message;
             }
-           
+            #region [log]
+            log.LogTrace("LEAVE {0}", nameof(GetClientInfo));
+            #endregion
+            return new DataListResponse<Client> { Success = success, Error = error, Result = result };
         }
             
 
@@ -92,33 +89,35 @@ namespace ECash.InfoClinica.WebApi.Controllers
         /// <returns></returns>
         [Route("getDebts")]
         [HttpGet]
-        public async Task<Response<Debt>> GetDebts(string clientCode)
+        public async Task<DataListResponse<Debt>> GetDebts(string clientCode)
         {
             #region [log]
             log.LogTrace("ENTER {0}", nameof(GetDebts));
             #endregion
+            var success = false;
+            var error = string.Empty;
+            var result = new List<Debt>();
             try
             {
                 if (String.IsNullOrEmpty(clientCode))
                 {
-                    #region [log]
-                    log.LogTrace("LEAVE {0}", nameof(GetDebts));
-                    #endregion
-                    return new Response<Debt> { Success = false, Error = "Parameter clientCode must not be empty" };
+                    error = "Parameter clientCode must not be empty";
                 }
-                var debts = await _clientInfoManagementService.GetDebtList(int.Parse(clientCode));
-                #region [log]
-                log.LogTrace("LEAVE {0}", nameof(GetDebts));
-                #endregion
-                return new Response<Debt> { Success = true, Result = debts };
+                else
+                {
+                    result = await _clientInfoManagementService.GetDebtList(int.Parse(clientCode));
+                    success = true;
+                }
             }
             catch (Exception ex)
             {
-                #region [log]
-                log.LogTrace("LEAVE {0}", nameof(GetDebts));
-                #endregion
-                return new Response<Debt> { Success = false, Error = ex.Message };
+                error = ex.Message;
+             
             }
+            #region [log]
+            log.LogTrace("LEAVE {0}", nameof(GetDebts));
+            #endregion
+            return new DataListResponse<Debt> { Success = success, Error = error, Result = result };
         }
 
 
@@ -129,27 +128,50 @@ namespace ECash.InfoClinica.WebApi.Controllers
         /// <returns></returns>
         [Route("fullPay")]
         [HttpPost]
-        public async Task<Response<bool>> PayTreatment(PaymentInfo info)
+        public async Task<Response> PayTreatment(PaymentInfo info)
         {
+            #region [log]
+            log.LogTrace("ENTER {0}", nameof(PayTreatment));
+            #endregion
+            var IsPaymentSuccess = false;
+            var error = string.Empty;
             try
-            {
-                #region [log]
-                log.LogTrace("ENTER {0}", nameof(PayTreatment));
-                #endregion
-                var paymentResult = await _clientInfoManagementService.MakeFullReceptionPayment(info);
-                #region [log]
-                log.LogTrace("LEAVE {0}", nameof(PayTreatment));
-                #endregion
-                return new Response<bool> { Success = paymentResult };
+            {  
+                IsPaymentSuccess = await _clientInfoManagementService.MakeFullReceptionPayment(info);
             }
             catch (Exception ex)
             {
-                #region [log]
-                log.LogTrace("LEAVE {0}", nameof(PayTreatment));
-                #endregion
-                return new Response<bool> { Success =  false, Error = ex.Message };
+                error = ex.Message;
             }
-            
+            #region [log]
+            log.LogTrace("LEAVE {0}", nameof(PayTreatment));
+            #endregion
+            return new Response { Success = IsPaymentSuccess, Error = error };
+
+        }
+
+        [Route("upfrontPay")]
+        [HttpPost]
+        public async Task<Response> UpfrontPay(PaymentInfo info)
+        {
+            #region [log]
+            log.LogTrace("ENTER {0}", nameof(UpfrontPay));
+            #endregion
+            var IsPaymentSuccess = false;
+            var error = string.Empty;
+            try
+            {
+                IsPaymentSuccess = await _clientInfoManagementService.MakeUpfrontReceptionPayment(info);
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+            }
+            #region [log]
+            log.LogTrace("LEAVE {0}", nameof(UpfrontPay));
+            #endregion
+            return new Response { Success = IsPaymentSuccess, Error = error };
+
         }
         #endregion
     }
