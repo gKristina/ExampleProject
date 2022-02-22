@@ -1,5 +1,4 @@
-﻿
-namespace ECash.InfoClinica.Database.Internal.Data
+﻿namespace ECash.InfoClinica.Database.Internal.Data
 {
     public class ApplicationContextSettings
     {

@@ -1,13 +1,13 @@
-﻿using ECash.Rafiki.Abstraction;
+﻿using System;
 using Ecash.InfoClinica.Database.Models;
-using Microsoft.EntityFrameworkCore;
-using System;
 using ECash.InfoClinica.Database.Internal.Data;
 using ECash.InfoClinica.Database.Internal.Models;
-using ECash.InfoClinica.WebApi.Internal.DBModels;
 using ECash.InfoClinica.WebApi.Internal;
+using ECash.InfoClinica.WebApi.Internal.DBModels;
+using ECash.Rafiki.Abstraction;
+using Microsoft.EntityFrameworkCore;
 
-namespace Ecash.InfoClinica.Database.Data 
+namespace Ecash.InfoClinica.Database.Data
 {
     public class ApplicationContext : DbContext
     {
@@ -40,7 +40,6 @@ namespace Ecash.InfoClinica.Database.Data
             var connectionString = settings.ConnectionString;
             optionsBuilder.UseFirebird(connectionString, providerOptions => providerOptions.WithExplicitParameterTypes(false));
         }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Clients>().ToTable("CLIENTS");

@@ -1,10 +1,10 @@
-﻿using ECash.InfoClinica.Database;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using ECash.InfoClinica.Database;
 using ECash.InfoClinica.WebApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace ECash.InfoClinica.WebApi.Controllers
 {
@@ -56,9 +56,11 @@ namespace ECash.InfoClinica.WebApi.Controllers
             #region [log]
             log.LogTrace("ENTER {0}", nameof(GetClientInfo));
             #endregion
+
             var success = false;
             var error = string.Empty;
             var result = new List<Client>();
+
             try
             {
                 if (string.IsNullOrEmpty(prefix) || string.IsNullOrEmpty(phone))
@@ -73,15 +75,19 @@ namespace ECash.InfoClinica.WebApi.Controllers
             }
             catch (Exception ex)
             {
+                #region [log]
+                log.LogError(ex, $"Error processing {nameof(GetClientInfo)} request");
+                #endregion
+
                 error = ex.Message;
             }
+
             #region [log]
             log.LogTrace("LEAVE {0}", nameof(GetClientInfo));
             #endregion
+
             return new DataListResponse<Client> { Success = success, Error = error, Result = result };
         }
-            
-
         /// <summary>
         /// Возвращает список всех долгов клиента
         /// </summary>
@@ -94,12 +100,14 @@ namespace ECash.InfoClinica.WebApi.Controllers
             #region [log]
             log.LogTrace("ENTER {0}", nameof(GetDebts));
             #endregion
+
             var success = false;
             var error = string.Empty;
             var result = new List<Debt>();
+
             try
             {
-                if (String.IsNullOrEmpty(clientCode))
+                if (string.IsNullOrEmpty(clientCode))
                 {
                     error = "Parameter clientCode must not be empty";
                 }
@@ -111,15 +119,19 @@ namespace ECash.InfoClinica.WebApi.Controllers
             }
             catch (Exception ex)
             {
+                #region [log]
+                log.LogError(ex, $"Error processing {nameof(GetDebts)} request");
+                #endregion
+
                 error = ex.Message;
             }
+
             #region [log]
             log.LogTrace("LEAVE {0}", nameof(GetDebts));
             #endregion
+
             return new DataListResponse<Debt> { Success = success, Error = error, Result = result };
         }
-
-
         /// <summary>
         /// Производит полную оплату одного приема
         /// </summary>
@@ -132,23 +144,29 @@ namespace ECash.InfoClinica.WebApi.Controllers
             #region [log]
             log.LogTrace("ENTER {0}", nameof(PayTreatment));
             #endregion
+
             var isPaymentSuccess = false;
             var error = string.Empty;
+            
             try
             {  
                 isPaymentSuccess = await _clientInfoManagementService.MakeFullReceptionPayment(info);
             }
             catch (Exception ex)
             {
+                #region [log]
+                log.LogError(ex, $"Error processing {nameof(PayTreatment)} request");
+                #endregion
+
                 error = ex.Message;
             }
+            
             #region [log]
             log.LogTrace("LEAVE {0}", nameof(PayTreatment));
             #endregion
+            
             return new Response { Success = isPaymentSuccess, Error = error };
-
         }
-
         [Route("upfrontPay")]
         [HttpPost]
         public async Task<Response> UpfrontPay(PaymentInfo info)
@@ -156,21 +174,28 @@ namespace ECash.InfoClinica.WebApi.Controllers
             #region [log]
             log.LogTrace("ENTER {0}", nameof(UpfrontPay));
             #endregion
+
             var isPaymentSuccess = false;
             var error = string.Empty;
+
             try
             {
                 isPaymentSuccess = await _clientInfoManagementService.MakeUpfrontReceptionPayment(info);
             }
             catch (Exception ex)
             {
+                #region [log]
+                log.LogError(ex, $"Error processing {nameof(UpfrontPay)} request");
+                #endregion
+
                 error = ex.Message;
             }
+
             #region [log]
             log.LogTrace("LEAVE {0}", nameof(UpfrontPay));
             #endregion
-            return new Response { Success = isPaymentSuccess, Error = error };
 
+            return new Response { Success = isPaymentSuccess, Error = error };
         }
         #endregion
     }

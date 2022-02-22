@@ -24,8 +24,11 @@ namespace ECash.InfoClinica.WebApi
             #region [log]
             log.LogTrace($"ENTER {nameof(ConfigureServices)}");
             #endregion
+
             base.ConfigureServices(registry, config);
+            
             registry.AddScoped<ClientInfoManagementService>();
+            
             #region [log]
             log.LogTrace($"LEAVE {nameof(ConfigureServices)}");
             #endregion
@@ -35,8 +38,11 @@ namespace ECash.InfoClinica.WebApi
             #region [log]
             log.LogTrace("ENTER {0}", nameof(ConfigureMvc));
             #endregion
+            
             base.ConfigureMvc(builder);
+            
             builder.AddApplicationPart(typeof(PlugIn).Assembly);
+            
             #region [log]
             log.LogTrace("LEAVE {0}", nameof(ConfigureMvc));
             #endregion
@@ -49,10 +55,12 @@ namespace ECash.InfoClinica.WebApi
             #region [log]
             log.LogTrace($"ENTER {nameof(Configure)}");
             #endregion
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+            
             #region [log]
             log.LogTrace("LEAVE {0}", nameof(Configure));
             #endregion

@@ -1,5 +1,4 @@
-﻿
-namespace ECash.InfoClinica.WebApi.Models
+﻿namespace ECash.InfoClinica.WebApi.Models
 {
     public class Client
     {

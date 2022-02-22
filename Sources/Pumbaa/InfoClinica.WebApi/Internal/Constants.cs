@@ -1,7 +1,4 @@
-﻿
-using System;
-
-namespace ECash.InfoClinica.WebApi.Internal
+﻿namespace ECash.InfoClinica.WebApi.Internal
 {
     internal static class Constants
     {
@@ -29,14 +26,4 @@ namespace ECash.InfoClinica.WebApi.Internal
             public const long Shid = -1;
         }
     }
-
-    internal static class PaymentUtils
-    {
-        internal static double ConvertToInfoClinicUSD(double value) 
-        {
-            return Math.Round(value / 3, 2);
-        }
-    }
-
-
 }
