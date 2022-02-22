@@ -46,18 +46,19 @@ namespace ECash.InfoClinica.Database
                         FullName = c.FullName,
                         MiddleName = c.MidName,
                     };
+            var result = await qryClients.ToListAsync();
             #region [log]
-            log.LogTrace("LEAVE {0}", nameof(FindClientsInfoByPhone));
-            log.LogTrace("Found clients: {0}", qryClients.Count);
+            log.LogTrace($"Found clients: {result.Count}");
+            log.LogTrace($"LEAVE {nameof(FindClientsInfoByPhone)}");
             #endregion
-            return await qryClients.ToListAsync();
+            return result;
         }
 
         public async Task<List<Debt>> GetDebtList(int clientCode)
         {
             #region [log]
-            log.LogTrace("ENTER {0}", nameof(GetDebtList));
-            log.LogTrace("Executing procedure sptreatdolg5 with client code: {0}", clientCode);
+            log.LogTrace($"ENTER {nameof(GetDebtList)}");
+            log.LogTrace($"Executing procedure sptreatdolg5 with client code: {clientCode}");
             #endregion
             // sptreatdolg5 is stored procedure
             string sqlCommand = string.Format(@"SELECT * FROM sptreatdolg5 ('01.01.1970',current_date,-1,-1,1,-1,0,30,0,0,{0})", clientCode);
@@ -77,25 +78,24 @@ namespace ECash.InfoClinica.Database
 
             }).ToListAsync();
             #region [log]
-            log.LogTrace("LEAVE {0}", nameof(GetDebtList));
-            log.LogTrace("Debt list count from database: {0}", debts.Count);
+            log.LogTrace($"Debt list count from database: {debts.Count}");
+            log.LogTrace($"LEAVE {nameof(GetDebtList)}");
             #endregion
             return debts;
         }
 
-
         public async Task<bool> MakeFullReceptionPayment(PaymentInfo info)
         {
             #region [log]
-            log.LogTrace("ENTER {0}", nameof(MakeFullReceptionPayment));
-            log.LogTrace("Start full payment with  client code: {0}", info.ClientCode);
+            log.LogTrace($"ENTER {nameof(MakeFullReceptionPayment)}");
+            log.LogTrace($"Start full payment with  client code: {info.ClientCode}");
             #endregion
             await using var dbTransaction = await _context.Database.BeginTransactionAsync();
             try
             {
                 var transaction = await CreatePaymentTransaction(info.ClientCode);
                 var transactionId = transaction.TransactionId;
-                var amountUSD = PymentUtils.ConvertToInfoClinicUSD(info.Paid);
+                var amountUSD = PaymentUtils.ConvertToInfoClinicUSD(info.Paid);
 
                 var loseCredit = new db.LoseCredit
                 {
@@ -141,17 +141,16 @@ namespace ECash.InfoClinica.Database
                 await _context.SaveChangesAsync();
                 await dbTransaction.CommitAsync();
                 #region [log]
-                log.LogTrace("SUCCESFUL LEAVE {0}", nameof(MakeFullReceptionPayment));
+                log.LogTrace($"LEAVE {nameof(MakeFullReceptionPayment)}");
                 #endregion
                 return true;
             }
             catch (Exception ex)
             {
                 #region [log]
-                log.LogTrace("LEAVE {0}", nameof(MakeFullReceptionPayment));
-                log.LogError(ex, nameof(MakeFullReceptionPayment));
+                log.LogError($"Error: {ex.Message}. Method: {nameof(MakeFullReceptionPayment)}");
+                log.LogTrace($"LEAVE {nameof(MakeFullReceptionPayment)}");
                 #endregion
-                dbTransaction.Rollback();
                 throw;
             }
         }
@@ -159,8 +158,8 @@ namespace ECash.InfoClinica.Database
         public async Task<bool> MakeUpfrontReceptionPayment(PaymentInfo info)
         {
             #region [log]
-            log.LogTrace("ENTER {0}", nameof(MakeUpfrontReceptionPayment));
-            log.LogTrace("Start upfront payment with client code: {0}", info.ClientCode);
+            log.LogTrace($"ENTER {nameof(MakeUpfrontReceptionPayment)}");
+            log.LogTrace($"Start upfront payment with client code: {info.ClientCode}");
             #endregion
             await using var dbTransaction = await _context.Database.BeginTransactionAsync();
             try
@@ -171,18 +170,18 @@ namespace ECash.InfoClinica.Database
                 var clientCode = info.ClientCode;
                 var amountUsd = upfontPayment.AmountUSD;
 
-                var transaction = new db.TransactionList
+                var transaction = new db.PaymentTransaction
                 {
                     ClientCode = clientCode,
                     TransactionId = transactionId,
-                    UID = UpfrontPaymentConstants.Uid,
-                    KkmCashPlat = UpfrontPaymentConstants.KkmCashPlat,
-                    KkmCredPlat = UpfrontPaymentConstants.KkmCredPlat,
-                    KkmCashPlatName = UpfrontPaymentConstants.CashPlatName,
-                    KkmCredPlatName = UpfrontPaymentConstants.CredPlatName,
-                    PayerCode = UpfrontPaymentConstants.PayerCode,
+                    UID = Constants.UpfrontPayment.Uid,
+                    KkmCashPlat = Constants.UpfrontPayment.KkmCashPlat,
+                    KkmCredPlat = Constants.UpfrontPayment.KkmCredPlat,
+                    KkmCashPlatName = Constants.UpfrontPayment.CashPlatName,
+                    KkmCredPlatName = Constants.UpfrontPayment.CredPlatName,
+                    PayerCode = Constants.UpfrontPayment.PayerCode,
                 };
-                await _context.TransactionList.AddAsync(transaction);
+                await _context.PaymentTransaction.AddAsync(transaction);
 
                 var jPPayment = new db.JPPayments
                 {
@@ -205,25 +204,24 @@ namespace ECash.InfoClinica.Database
                     ExTreatCode = info.TreatmentCode,
                     PID = transactionId,
                     TransactionId = transactionId,
-                    Schid = UpfrontPaymentConstants.Shid,
-                    OperationType = UpfrontPaymentConstants.OperationType
+                    Schid = Constants.UpfrontPayment.Shid,
+                    OperationType = Constants.UpfrontPayment.OperationType
                 };
                 await _context.JPaymentDet.AddAsync(jPaymentDet);
 
                 await _context.SaveChangesAsync();
                 await dbTransaction.CommitAsync();
                 #region [log]
-                log.LogTrace("SUCCESFUL LEAVE {0}", nameof(MakeUpfrontReceptionPayment));
+                log.LogTrace($"LEAVE {nameof(MakeUpfrontReceptionPayment)}");
                 #endregion
                 return true;
             }
             catch (Exception ex)
             {
                 #region [log]
-                log.LogTrace("LEAVE {0}", nameof(MakeUpfrontReceptionPayment));
-                log.LogError(ex, nameof(MakeUpfrontReceptionPayment));
+                log.LogError($"Error: {ex.Message}. Message: {nameof(MakeUpfrontReceptionPayment)}");
+                log.LogTrace($"LEAVE {nameof(MakeUpfrontReceptionPayment)}");
                 #endregion
-                dbTransaction.Rollback();
                 throw;
             }
         }
@@ -231,18 +229,18 @@ namespace ECash.InfoClinica.Database
         #endregion
 
         #region Private methods
-        private async Task<db.TransactionList> CreatePaymentTransaction(long clientCode)
+        private async Task<db.PaymentTransaction> CreatePaymentTransaction(long clientCode)
         {
             #region [log]
-            log.LogTrace("ENTER {0}", nameof(CreatePaymentTransaction));
+            log.LogTrace($"ENTER {nameof(CreatePaymentTransaction)}");
             #endregion
-            var transactionId = _context.NextValueFor(Sequences.TransactionId);
-            var transaction = new db.TransactionList { ClientCode = clientCode, TransactionId = transactionId };
-            await _context.TransactionList.AddAsync(transaction);
+            var transactionId = _context.NextValueFor(Constants.Sequences.TransactionId);
+            var transaction = new db.PaymentTransaction { ClientCode = clientCode, TransactionId = transactionId };
+            await _context.PaymentTransaction.AddAsync(transaction);
             await _context.SaveChangesAsync();
             #region [log]
-            log.LogTrace("LEAVE {0}", nameof(CreatePaymentTransaction));
-            log.LogTrace("Transaction created with transactionId: {0}", transactionId);
+            log.LogTrace($"Transaction created with transactionId: {transactionId}");
+            log.LogTrace($"LEAVE {nameof(CreatePaymentTransaction)}");
             #endregion
             return transaction;
         }
@@ -250,28 +248,26 @@ namespace ECash.InfoClinica.Database
         private async Task<db.UpfrontPayment> CreateUpfrontPaymentTransaction(PaymentInfo info)
         {
             #region [log]
-            log.LogTrace("ENTER {0}", nameof(CreateUpfrontPaymentTransaction));
+            log.LogTrace($"ENTER {nameof(CreateUpfrontPaymentTransaction)}");
             #endregion
-            var transactionId = _context.NextValueFor(Sequences.TransactionId);
+            var transactionId = _context.NextValueFor(Constants.Sequences.TransactionId);
             var payment = new db.UpfrontPayment
             {
                 Id = transactionId,
                 ClientCode = info.ClientCode,
                 TransactionId = transactionId,
                 Amount = info.Paid,
-                AmountUSD = PymentUtils.ConvertToInfoClinicUSD(info.Paid),
+                AmountUSD = PaymentUtils.ConvertToInfoClinicUSD(info.Paid),
                 DocumentNumber = transactionId
             };
             await _context.UpfrontPayment.AddAsync(payment);
             await _context.SaveChangesAsync();
             #region [log]
-            log.LogTrace("LEAVE {0}", nameof(CreateUpfrontPaymentTransaction));
-            log.LogTrace("Upfront payment transaction created with transactionId: {0}", transactionId);
+            log.LogTrace($"Upfront payment transaction created with transactionId: {transactionId}");
+            log.LogTrace($"LEAVE {nameof(CreateUpfrontPaymentTransaction)}");
             #endregion
             return payment;
         }
-
-        #endregion 
-
+        #endregion
     }
 }

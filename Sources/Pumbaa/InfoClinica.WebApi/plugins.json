@@ -15,7 +15,7 @@
       },
       {
         "Name": "ECash ИнфоКлиника",
-        "Path": "C:\\VS_Projects\\InfoClinica\\Sources\\InfoClinica.WebApi\\bin\\Debug\\net5.0",
+        "Path": "C:\\VS_Projects\\InfoClinica\\Sources\\Pumbaa\\InfoClinica.WebApi\\bin\\Debug\\net5.0",
         "Assembly": "ECash.InfoClinica.WebApi.dll",
         "TypeName": "ECash.InfoClinica.WebApi.PlugIn"
       }

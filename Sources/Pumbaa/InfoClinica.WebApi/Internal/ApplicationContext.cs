@@ -26,7 +26,7 @@ namespace Ecash.InfoClinica.Database.Data
         #region DBSets
         internal DbSet<Clients> Clients { get; set; }
         internal DbSet<ClientPhones> ClientPhones { get; set; }
-        internal DbSet<TransactionList> TransactionList { get; set; }
+        internal DbSet<PaymentTransaction> PaymentTransaction { get; set; }
         internal DbSet<LoseCredit> LoseCredit { get; set; }
         internal DbSet<JPPayments> JPPayments { get; set; }
         internal DbSet<JPaymentDet> JPaymentDet { get; set; }
@@ -50,7 +50,7 @@ namespace Ecash.InfoClinica.Database.Data
             modelBuilder.Entity<LoseCredit>().ToTable("LOSECREDIT");
             modelBuilder.Entity<JPPayments>().ToTable("JPPAYMENTS");
             modelBuilder.Entity<JPaymentDet>().ToTable("JPAYMDET");
-            modelBuilder.Entity<TransactionList>().ToTable("TRANSACTLIST");
+            modelBuilder.Entity<PaymentTransaction>().ToTable("TRANSACTLIST");
             modelBuilder.Entity<UpfrontPayment>().ToTable("CLAVANS");
 
             base.OnModelCreating(modelBuilder);

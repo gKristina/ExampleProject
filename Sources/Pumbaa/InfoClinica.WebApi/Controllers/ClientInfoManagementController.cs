@@ -13,7 +13,7 @@ namespace ECash.InfoClinica.WebApi.Controllers
     /// </summary>
     [ApiController]
     [Produces("application/json")]
-    [Route("clientsManagment")]
+    [Route("clientsManagement")]
     public class ClientInfoManagementController : ControllerBase
     {
         #region Private fields
@@ -112,7 +112,6 @@ namespace ECash.InfoClinica.WebApi.Controllers
             catch (Exception ex)
             {
                 error = ex.Message;
-             
             }
             #region [log]
             log.LogTrace("LEAVE {0}", nameof(GetDebts));
@@ -133,11 +132,11 @@ namespace ECash.InfoClinica.WebApi.Controllers
             #region [log]
             log.LogTrace("ENTER {0}", nameof(PayTreatment));
             #endregion
-            var IsPaymentSuccess = false;
+            var isPaymentSuccess = false;
             var error = string.Empty;
             try
             {  
-                IsPaymentSuccess = await _clientInfoManagementService.MakeFullReceptionPayment(info);
+                isPaymentSuccess = await _clientInfoManagementService.MakeFullReceptionPayment(info);
             }
             catch (Exception ex)
             {
@@ -146,7 +145,7 @@ namespace ECash.InfoClinica.WebApi.Controllers
             #region [log]
             log.LogTrace("LEAVE {0}", nameof(PayTreatment));
             #endregion
-            return new Response { Success = IsPaymentSuccess, Error = error };
+            return new Response { Success = isPaymentSuccess, Error = error };
 
         }
 
@@ -157,11 +156,11 @@ namespace ECash.InfoClinica.WebApi.Controllers
             #region [log]
             log.LogTrace("ENTER {0}", nameof(UpfrontPay));
             #endregion
-            var IsPaymentSuccess = false;
+            var isPaymentSuccess = false;
             var error = string.Empty;
             try
             {
-                IsPaymentSuccess = await _clientInfoManagementService.MakeUpfrontReceptionPayment(info);
+                isPaymentSuccess = await _clientInfoManagementService.MakeUpfrontReceptionPayment(info);
             }
             catch (Exception ex)
             {
@@ -170,7 +169,7 @@ namespace ECash.InfoClinica.WebApi.Controllers
             #region [log]
             log.LogTrace("LEAVE {0}", nameof(UpfrontPay));
             #endregion
-            return new Response { Success = IsPaymentSuccess, Error = error };
+            return new Response { Success = isPaymentSuccess, Error = error };
 
         }
         #endregion

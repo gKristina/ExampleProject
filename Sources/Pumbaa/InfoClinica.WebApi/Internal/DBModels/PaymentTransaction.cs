@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ECash.InfoClinica.WebApi.Internal.DBModels
 {
-    public class TransactionList
+    public class PaymentTransaction
     {
         [Key]
         [Column("TRANSACTID")]
