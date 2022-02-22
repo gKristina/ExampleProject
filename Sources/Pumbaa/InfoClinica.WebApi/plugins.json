@@ -1,0 +1,24 @@
+﻿{
+  "ECash.Vole.PlugIns": {
+    "PlugIns": [
+      {
+        "Name": "ECash CORS",
+        "Path": "C:\\Terminal\\Pumbaa\\plugins",
+        "Assembly": "ECash.Common.Cors.dll",
+        "TypeName": "ECash.Common.Cors.PlugIn"
+      },
+      {
+        "Name": "ECash Настройки",
+        "Path": "C:\\Terminal\\Pumbaa\\plugins",
+        "Assembly": "ECash.Rafiki.dll",
+        "TypeName": "ECash.Rafiki.PlugIn"
+      },
+      {
+        "Name": "ECash ИнфоКлиника",
+        "Path": "C:\\VS_Projects\\InfoClinica\\Sources\\Pumbaa\\InfoClinica.WebApi\\bin\\Debug\\net5.0",
+        "Assembly": "ECash.InfoClinica.WebApi.dll",
+        "TypeName": "ECash.InfoClinica.WebApi.PlugIn"
+      }
+    ]
+  }
+}
