@@ -1,0 +1,27 @@
+{
+  "result": [
+    {
+      "code": 1,
+      "lastName": "Красный",
+      "firstName": "Помидор",
+      "middleName": "Помидоров",
+      "fullName": "Красный Помидор Помидоров"
+    },
+    {
+      "code": 2,
+      "lastName": "Фамилия",
+      "firstName": "Второй",
+      "middleName": "Клиент",
+      "fullName": "Фамилия Второй Клиент"
+    },
+    {
+      "code": 3,
+      "lastName": "Фамилия",
+      "firstName": "Третий",
+      "middleName": "Клиент",
+      "fullName": "Фамилия Третий Клиент"
+    }
+  ],
+  "success": true,
+  "error": ""
+}
