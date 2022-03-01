@@ -25,12 +25,10 @@
 <script>
   import store from "@/store/store";
   import payment from "@/store/dynamic/payment";
-  import refund from "@/store/dynamic/refund";
   import { startPayCycle, stopBill } from "@/helpers/externals";
   import { mapActions, mapGetters, mapState } from "vuex";
   import MainFooter from "@/components/service/MainFooter";
   import HeaderContent from "@/components/pages/HeaderContent";
-  import { api } from '@/services/api/ApiFactory';
   import clients from '@/store/dynamic/clients';
   
   export default {
@@ -50,29 +48,24 @@
     },
     methods: {
       ...mapActions({
-        updateAppSettings: 'settings/updateAppSettings',
         setMainPageStatus: 'setMainPageStatus',
         resetStore: 'loadInitialState',
         initGateID: 'settings/initializeGateId'
-      }),
+      })
     },
-    beforeCreate() {
-      if (store.hasModule('payment')) {
-        store.unregisterModule('payment');
-      }
-      if (store.hasModule('refund')) {
-        store.unregisterModule('refund');
-      }
-      if (store.hasModule('clients')) {
-        store.unregisterModule('clients');
-      }
-      
-      store.dispatch('loadInitialState');
-      setTimeout(() => {
+    async beforeCreate() {
+      await store.dispatch('loadInitialState');
+  
+      if (!store.hasModule('payment')) {
         store.registerModule('payment', payment);
-        store.registerModule('refund', refund);
+      } else {
+        await store.dispatch('payment/clearPaymentState');
+      }
+      if (!store.hasModule('clients')) {
         store.registerModule('clients', clients);
-      }, 500);
+      } else {
+        await store.dispatch('clients/clearClientsState');
+      }
       
       stopBill();
     },

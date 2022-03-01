@@ -1,16 +1,13 @@
-import { TAX_GROUP } from "@/helpers/constants/taxgroup";
-import { PAYMENT } from "@/helpers/constants/payment";
-import { CASHBOX_MODE } from "@/helpers/constants/cashboxMode";
 import { getDBKey } from '@/helpers/externals';
-import Vue from 'vue';
+import { CASHBOX_MODE } from '@/helpers/constants/cashboxMode';
 
-const state = {
+ const state = {
   debug: {
-    on: 1,
+    on: 0,
     mock: 1,
     devIntegration: 0,
     integration: { // отладочные настройки интеграции
-      A: 'localhost:5000/clientsManagement/',
+      A: 'http://localhost:5000/clientsManagement/',
       B: '',
       C: '',
       D: '',
@@ -73,14 +70,18 @@ const state = {
 const getters = {
   mockEnabled: state => state.debug.on && state.debug.mock,
   isDebug: state => Boolean(state.debug.on),
+  cashboxDebug: state => state.cashbox.debug,
+  dbNumber: state => state.cashbox.dbNumber,
+  devIntegration: state => state.debug.devIntegration,
+  devIntegrationValues: state => state.debug.integration
 };
 
 const actions = {
   initializeGateId: ({ commit }) => {
       commit('UPDATE_GATE_ID', getDBKey('IntegrationValB'))
   },
-  updateAppSettings: ({ commit }) => {
-    fetch('/appSettings/settings.json')
+  async updateAppSettings({ commit }) {
+    await fetch('/appSettings/settings.json')
         .then( res => res.json())
         .then(config => {commit('UPDATE_APP_SETTINGS', config)});
   }
@@ -91,10 +92,7 @@ const mutations = {
     state.gateId = gateId
   },
   UPDATE_APP_SETTINGS: (state, settings) => {
-    const keySettings = Object.keys(settings);
-    keySettings.forEach(key => {
-      Vue.set(state, key, settings[key])
-    })
+    Object.assign(state, settings);
   }
 }
 

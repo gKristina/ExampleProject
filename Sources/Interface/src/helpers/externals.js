@@ -4,7 +4,7 @@
 
 import { log } from "@/helpers/log";
 import { generateRandomNumberWithLength } from "@/helpers/utils";
-import settings from '@/store/settings';
+import store from '@/store/store';
 
 /**
  * Является ли исполняемая среда терминалом
@@ -81,10 +81,12 @@ export function getDBKey(key) {
   key = String(key);
   let data;
   
-  if (settings.state.debug.on
-    && settings.state.debug.devIntegration
-    && key.includes('IntegrationVal')) {
-    return settings.state.debug.integration[key.slice(-1)];
+  const useDevIntegration = store.getters["settings/isDebug"]
+    && store.getters["settings/devIntegration"]
+    && key.includes('IntegrationVal');
+  
+  if (useDevIntegration) {
+    return store.getters["settings/devIntegrationValues"][key.slice(-1)];
   }
   
   if (isTerminal()) {

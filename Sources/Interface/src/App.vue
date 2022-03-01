@@ -134,7 +134,11 @@
       ...mapActions({
         cancelCash: 'payment/cancelCash',
       }),
-      createApi() {
+      async updateAppSettings() {
+        return this.$store.dispatch('settings/updateAppSettings');
+      },
+      async createApi() {
+        await this.updateAppSettings();
         api.createInstance();
         return api.instance;
       },
@@ -150,10 +154,6 @@
         
         this.skud.timeout = setTimeout(() => this.skud.sequence = '', 5 * 1000);
       },
-      ...mapActions({
-        saveCurrentStore: 'saveInitialState',
-        updateAppSettings: 'settings/updateAppSettings'
-      }),
       changePage(component) {
         if (component.__esModule) {
           component = component.default;
@@ -247,10 +247,7 @@
         log.step('╔══════════════════════════════════════════════════╗');
         log.step('║                       INIT                       ║');
         log.step('╚══════════════════════════════════════════════════╝');
-        
         this.$nextTick(() => this.$refs.app.focus());
-        this.saveCurrentStore();
-        this.updateAppSettings();
         if (this.isDebug) {
           this.stopTimeout();
         } else {

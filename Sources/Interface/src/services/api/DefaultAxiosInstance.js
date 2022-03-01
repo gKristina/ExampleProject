@@ -3,8 +3,7 @@ import { log } from "@/helpers/log";
 import { getDBKey } from '@/helpers/externals';
 
 const defaultRequest = axios.create({
-  //baseURL: getDBKey('IntegrationValB'),
-  baseURL: 'localhost:5000/clientsManagement/',
+  baseURL: getDBKey('IntegrationValB'),
   timeout: 60 * 1000,
   headers: {
     'Content-Type': 'application/json; charset=utf-8',

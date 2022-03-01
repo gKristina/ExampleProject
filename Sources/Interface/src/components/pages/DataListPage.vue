@@ -1,62 +1,68 @@
 <template>
   <div :class="$style.confirmPage">
     <portal to="header">
-      <HeaderContent :step="dataIsSet ? 'Подтвердите данные' : 'Произошла ошибка'"/>
+      <HeaderContent :step="'Подтвердите данные'"/>
     </portal>
     <portal to="modal">
       <BaseModal
-        v-if="showLoader"
+        v-if="modal.show"
         :allow-user-close="false"
       >
-        <BaseLoader>
+        <div v-if="modal.type === modalTypes.text">{{modal.text}}</div>
+        <BaseLoader  v-if="modal.type === modalTypes.loader">
           Пожалуйста подождите...
         </BaseLoader>
+        <div v-if="modal.type === modalTypes.input" :class="$style.inputModal">
+          <div :class="$style.inputTitle">Введите сумму для оплаты</div>
+          <InputPage
+            :pageAsModal="true"
+            @closeModal="closeModal"
+            @inputSum="onInputSum"
+            :inputSumPlaceholder="`Cумма должна быть больше или равна ${selectedDebt.treatmentAmount}`"
+          />
+        </div>
       </BaseModal>
     </portal>
     <h2
-      v-if="dataIsSet"
       :class="$style.dataTitle"
     >
-      Данные по заказу
+      {{titleContent}}
     </h2>
-    <div
-      :class="$style.dataErrorText"
-      v-if="!dataIsSet"
-    >
-      {{ errorMessage }}
-    </div>
-    <div v-else :class="$style.ifSuccessBlock">
+    <div :class="$style.ifSuccessBlock" v-if="data.length">
       <div :class="$style.mainSection">
         <div
           :class="[$style.wrapper]"
           ref="wrap"
-          :style="wrapperWidth"
         >
+          <div :class="$style.columnTitles">
+            <div v-if="rows.doctorName" :class="$style.columnRow">Доктор</div>
+            <div v-if="rows.treatmentDate" :class="$style.columnRow">Дата приема</div>
+            <div v-if="rows.treatmentAmount" :class="$style.columnRow">Стоимость</div>
+          </div>
           <div
-            :class="[$style.dataWrap, {[$style.active]: selectedRow === item.code }]"
+            :class="[$style.dataWrap, {[$style.active]: selectedRow === (item.code || item.orderCode) }]"
             v-for="(item, index) in data"
             :key="index"
-            :style="cardSize"
-            @click="selectRow(item.code)"
+            @click="selectRow(item)"
           >
-            <div>
-              <div>№: {{index + 1}}</div>
-              <div>{{item.fullName}}</div>
+            <div v-if="rows.fullName" :class="$style.columnRow">
+              {{item.fullName}}
             </div>
-            <div>
-    
+            <div v-if="rows.doctorName" :class="$style.columnRow">
+              {{item.doctorName}}
             </div>
-            <div>
+            <div v-if="rows.treatmentDate" :class="$style.columnRow">
+              {{item.treatmentDate}}
+            </div>
+            <div v-if="rows.treatmentAmount" :class="$style.columnRow">
+              {{item.treatmentAmount}} руб.
             </div>
           </div>
         </div>
       </div>
-      <div
-        :class="[$style.bottomWrap, $style.list]"
-      >
-      </div>
     </div>
-    <div :class="$style.listArrows" v-if="!cardView">
+    <div v-else :class="$style.dataError" > Данные не найдены</div>
+    <div :class="$style.listArrows" v-if="data.length">
       <img
         src="@/assets/img/icons/icon-arrow.svg"
         alt="Стрелка"
@@ -74,11 +80,11 @@
       <MainFooter>
         <BaseButton
           back
-          @click="$emit('changePage', require('@/components/pages/InputPage'))"
+          @click="onClickBack"
         >Назад
         </BaseButton>
         <BaseButton
-          :active="dataIsSet"
+          :active="selectedRow"
           next
           @click="onClickNext"
         >Далее
@@ -93,71 +99,151 @@
   import MainFooter from "@/components/service/MainFooter";
   import BaseButton from "@/components/base/BaseButton";
   import "scroll-behavior-polyfill"
-  import { mapState } from "vuex";
+  import { mapActions, mapState } from 'vuex';
   import BaseModal from "@/components/base/BaseModal";
   import BaseLoader from "@/components/base/BaseLoader";
-  import { goodsMock } from "@/helpers/mock/goodsMock";
   import { DATALIST_TYPE } from '@/helpers/constants/clients';
+  import InputPage from '@/components/pages/InputPage';
   
   export default {
     name: "DataListPage",
-    components: {HeaderContent, MainFooter, BaseButton, BaseModal, BaseLoader},
+    components: { InputPage, HeaderContent, MainFooter, BaseButton, BaseModal, BaseLoader},
+    inject: {
+      api: 'api'
+    },
     data() {
       return {
-        cardView: false,
-        cardSize: {},
-        
         data: '',
-        finalPrice: null,
-        wrapperWidth: null,
-        scrollValue: null,
-        groupWidth: null,
-        pages: null,
-        currentPage: 1,
-        showLoader: false,
-        errorMessage: 'Данные не получены',
+        DATALIST_TYPE,
+        modal: {
+          show: false,
+          type: '',
+          text: '',
+          timer: null
+        },
+        modalTypes: {
+          loader: 'loader',
+          input: 'input',
+          text: 'text'
+        },
+        rows: {
+          fullName: false,
+          doctorName: false,
+          treatmentDate: false,
+          treatmentAmount: false,
+        },
+        scrollValue: 200,
         selectedRow: null
       }
     },
     methods: {
+      ...mapActions({
+        setDataListType: 'setDataListType',
+        selectClient: 'clients/selectClient',
+        clearClientsState: 'clients/clearClientsState',
+        setClientsDebt: 'clients/setClientsDebt',
+        selectDebt: 'clients/selectDebt',
+        setSumToPay: 'payment/setSumToPay',
+
+      }),
       scrollDown() {
         this.$refs.wrap.scrollTop += this.scrollValue
       },
       scrollUp() {
         this.$refs.wrap.scrollTop -= this.scrollValue
       },
-      selectRow(id) {
-        return this.selectedRow === id ? this.selectedRow = 0 : this.selectedRow = id;
+      selectRow(item) {
+        const code = this.dataListType === DATALIST_TYPE.CLIENTS ? item.code : item.orderCode;
+        return this.selectedRow === code ? this.selectedRow = 0 : this.selectedRow = code;
       },
       onClickNext() {
+        if (!this.selectedRow) return;
+        this.showLoader();
         if (this.dataListType === DATALIST_TYPE.CLIENTS) {
-          this.data = this.clients;
+          this.selectClient(this.selectedRow);
+          this.getClientDebts();
         }
-        else if (this.dataListType === DATALIST_TYPE.DEBTS) {
-          // this.showLoader = true
+        if (this.dataListType === DATALIST_TYPE.DEBTS) {
+          this.selectDebt(this.selectedRow);
+          this.askPaymentPrice();
         }
+      },
+      async getClientDebts() {
+        const api = await this.api;
+        api.getDebts(this.currentClient.code).then(
+          debts => {
+            debts.forEach(debt =>  this.setClientsDebt(debt));
+            this.configureDebtsTable(debts);
+            this.setDataListType(DATALIST_TYPE.DEBTS);
+          }, () => {
+            this.showModal({text: `Не удалось получить данные по задолженностям`, type: this.modalTypes.text});
+          }
+        ).finally(() => {
+          this.closeModal();
+          this.selectedRow = null;
+        });
+      },
+      askPaymentPrice() {
+        this.modal.show = true;
+        this.modal.type = this.modalTypes.input;
+      },
+      onInputSum(value) {
+        if (value < this.selectDebt.treatmentAmount) return;
+        this.setSumToPay(Number(value));
+        this.$emit('changePage', require('@/components/pages/PaymentPickPage'))
+      },
+      onClickBack() {
+        this.clearClientsState();
+        this.$emit('changePage', require('@/components/pages/InputPage'))
+      },
+      showLoader() {
+        this.modal.show = true;
+        this.modal.type = this.modalTypes.loader;
+      },
+      showModal({text, seconds = 0, type}) {
+        clearTimeout(this.modal.timer)
+        this.modal = {
+          show: true,
+          text,
+          type,
+          timer: seconds ? setTimeout(() => this.modal.show = false, seconds * 1000) : null,
+        }
+      },
+      closeModal() {
+        this.modal.show = false;
+        this.modal.type = '';
+      },
+      configureClientsTable() {
+        this.rows.fullName = true;
+        this.data = this.client;
+      },
+      configureDebtsTable() {
+        this.rows.fullName = false;
+        this.rows.doctorName = true;
+        this.rows.treatmentDate = true;
+        this.rows.treatmentAmount = true;
+        this.data = this.clientDebts;
       }
     },
     computed: {
       ...mapState({
-
+        selectedDebt: state => state.clients.selectedDebt,
         dataListType: state => state.dataListType,
-        clients: state => state.clients.clientsInfo
+        client: state => state.clients.clientsInfo,
+        currentClient: state => state.clients.currentClient,
+        clientDebts: state => state.clients.clientDebts
       }),
-      dataIsSet() {
-        return this.data ?? false
+      titleContent() {
+        return this.dataListType === DATALIST_TYPE.CLIENTS ? "Выберите клиента" : "Выберете задолженность для оплаты";
       }
     },
     created() {
       if (this.dataListType === DATALIST_TYPE.CLIENTS) {
-        this.data = this.clients;
+        this.configureClientsTable();
       }
-      else if (this.dataListType === DATALIST_TYPE.DEBTS) {
-        // this.showLoader = true
+      if (this.dataListType === DATALIST_TYPE.DEBTS) {
+        this.configureDebtsTable();
       }
-    },
-    mounted() {
-    
     }
   }
 </script>
@@ -171,18 +257,44 @@
     justify-content: space-between;
     padding: 20px 30px;
     
+    .inputModal {
+      display: flex;
+      flex-direction: row;
+    }
+    
+    .inputTitle {
+      text-align: center;
+      font-weight: bold;
+      font-size: 2.5rem;
+    }
+  
+    .columnTitles {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+    }
+    .columnTitles > div {
+      min-width: 15rem;
+    }
+    
     .dataTitle {
       font-size: 1.5rem;
       margin-bottom: 20px;
       text-align: center;
     }
+    .dataTitle > div {
+      min-width: 15rem;
+    }
     
-    .dataErrorText {
-      width: 600px;
-      font-size: 2rem;
-      margin: 0 auto;
+    .dataError {
+      font-size: 2.8rem;
       text-align: center;
-      line-height: 40px;
+      margin-bottom: 30rem;
+    }
+    
+    .columnRow {
+      width: 30%;
+      text-align: center;
     }
     
     .ifSuccessBlock {
@@ -252,11 +364,20 @@
   .wrapper {
     overflow: hidden;
     scroll-behavior: smooth;
-    width: 85vw;
-    height: auto;
+    width: 95vw;
+    width: 95vw;
+    max-height: 43vh;
     background-color: $ecMainLight;
     box-shadow: $ecCardShadow;
-    border-radius: 30px;
+    border-radius: 15px;
+    padding: 2rem;
+  
+    .columnTitles {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      margin-bottom: 2rem;
+    }
     
     .groups {
       &.list {
@@ -264,14 +385,17 @@
         padding: 2rem;
       }
     }
+
     
     .dataWrap {
       display: flex;
-      justify-content: space-between;
-      cursor: pointer;
+      justify-content:  space-around;
       width: 100%;
-      border-bottom: 1px solid rgba($ecMainDark, 0.2);
+      box-shadow: $ecLightGrey 0px 0px 0px 3px;
       padding: 1rem 0 1rem 2rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      border-radius: 15px;
       
       &:first-child {
         padding-top: 0;
@@ -279,8 +403,7 @@
   
       &.active{
         border: 2px solid $ecAccentLight;
-        box-shadow:  0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);;
-        border-radius: 30px;
+        border-radius: 15px;
       }
       
       .priceWrap {

@@ -1,21 +1,22 @@
-import settings from '@/store/settings';
 import { apiMockService } from '@/services/api/apiMockService';
 import { apiService } from '@/services/api/apiService';
+import store from '@/store/store';
 
 export const api = {
   instance: null,
   
   createInstance: function () {
     if (!this.instance) {
-      ApiFactory.init();
+      const appMode = getMode();
+      ApiFactory.init(appMode);
       this.instance = ApiFactory.create();
     }
   }
 };
 
 const ApiFactory = {
-  init: function () {
-    this.mode =  settings.state.debug.on ? modeTypes.debug : modeTypes.prod;
+  init: function (mode) {
+    this.mode = mode;
     return this;
   },
   
@@ -31,7 +32,12 @@ const ApiFactory = {
   }
 };
 
+const getMode = function () {
+  return store.getters["settings/isDebug"] ? modeTypes.debug : modeTypes.prod;
+};
+
+
 const modeTypes = {
   debug: 'debug',
-  prod: 'prod'
+  prod: 'prod',
 };

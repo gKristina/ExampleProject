@@ -25,10 +25,6 @@
             <td>Внесено:</td>
             <td :class="$style.text_right_cash">{{ inputSum.toLocaleString('ru-RU') }} ₽</td>
           </tr>
-          <tr>
-            <td>Сдача:</td>
-            <td :class="$style.text_right_cash">{{ changeSum.toLocaleString('ru-RU') }} ₽</td>
-          </tr>
         </table>
       </div>
     </div>
@@ -186,6 +182,7 @@
         isPinpadDone: state => state.pinpadDone,
         isFinished: state => state.finished,
         isSuccess: state => state.success,
+        sumToPay:  state => state.sumToPay
       }),
       ...mapState({
         allowPartialCash: state => state.settings.payment.allowPartial.cash,
@@ -257,14 +254,15 @@
       }
     },
     methods: {
-      ...mapActions('payment', {
-        startPayment: 'start',
-        interruptPayment: 'interrupt',
-        finalizePayment: 'finalize',
-        confirmCash: 'confirmCash',
-        cancelCash: 'cancelCash',
-        setGoodsList: 'setGoodsList',
-        debugAddInputSum: 'debugAddInputSum',
+      ...mapActions({
+        startPayment: 'payment/start',
+        interruptPayment: 'payment/interrupt',
+        finalizePayment: 'payment/finalize',
+        confirmCash: 'payment/confirmCash',
+        cancelCash: 'payment/cancelCash',
+        setGoodsList: 'payment/setGoodsList',
+        debugAddInputSum: 'payment/debugAddInputSum',
+        selectedDebt: 'clients/setClientsDebt'
       }),
       start(params) {
         log.step('Запускаем оплату');
@@ -368,13 +366,13 @@
     created() {
       this.paymentParams = {
         goodsList: {
-          name: 'test',
-          price: 10,
+          name: 'Оплата лечения',
+          price: this.selectedDebt.treatmentAmount,
           tax: TAX_GROUP.VAT_20,
           paymentTypeSign: PAYMENT.TYPE_SIGN.FULL_PAYMENT,
           paymentItemSign: PAYMENT.ITEM_SIGN.PRODUCT,
         },
-        sum: 10,
+        sum: this.sumToPay,
       }
       this.start(this.paymentParams);
       

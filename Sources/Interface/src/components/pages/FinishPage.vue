@@ -27,10 +27,16 @@
   import MainFooter from "@/components/service/MainFooter";
   import { mapState } from "vuex";
   import HeaderContent from "@/components/pages/HeaderContent";
+  import { log } from '@/helpers/log';
+  import { PaymentSchedule } from '@/services/api/PaymentSchedule';
+  import { getCurrentSession } from '@/helpers/externals';
   
   export default {
     name: "FinishPage",
     components: { HeaderContent, MainFooter, BaseButton },
+    inject: {
+      api: 'api'
+    },
     data() {
       return {
         toMain: {
@@ -43,6 +49,8 @@
       ...mapState({
         paymentType: state => state.payment.type,
         paymentSuccess: state => state.payment.success,
+        selectedDebt: state => state.clients.selectedDebt,
+        inputSum:  state => state.payment.sumToPay
       }),
     },
     methods: {
@@ -50,14 +58,27 @@
         this.$emit('changePage', require('@/components/pages/IdlePage'));
       }
     },
-    created() {
+    async created() {
       this.toMain.timer = setTimeout(
         this.goToMain,
         this.toMain.delay,
       );
   
       if (this.paymentSuccess) {
-        // выполняем действия при успешной оплате
+        const data = {
+          ...this.selectedDebt,
+          paid: this.inputSum
+        };
+        const api = await this.api;
+        api.pay(data).then(
+          () => {}, 
+          () => {
+            log.info('[Оплата] Ставим оплату в очередь')
+            PaymentSchedule.add({id: getCurrentSession(), data})
+          }).catch(e => {
+          log.info('[Оплата] Ставим оплату в очередь', e)
+          PaymentSchedule.add({id: getCurrentSession(), data})
+        });
       }
     },
     beforeDestroy() {

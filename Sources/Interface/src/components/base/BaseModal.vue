@@ -68,7 +68,8 @@
       position: relative;
       display: flex;
       flex-direction: column;
-      max-width: 60vw;
+      max-width: 90vw;
+      max-height: 90vw;
       background-color: $ecMainLight;
       padding: 40px;
       box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;

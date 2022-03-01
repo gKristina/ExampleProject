@@ -6,11 +6,9 @@ import { log } from '@/helpers/log';
 import store from '@/store/store';
 import {
   addCheckParameter,
-  addKKMCash,
   addPaymentParameters,
   getCurrentSession,
   getDBKey,
-  getKKMCash,
   getKKMReady,
   getPaymentParameters,
   setDBKey
@@ -188,7 +186,7 @@ export function waitBasket(timeout = 30, delay = 300) {
  * @return {Promise<PaymentInfo>}
  */
 export async function getLastPayment() {
-  const payment = await getLastPaymentFromCashbox(store.state.settings.cashbox.debug);
+  const payment = await getLastPaymentFromCashbox(store.getters["settings/cashboxDebug"]);
   const basket = await waitBasket();
   log.debug(JSON.stringify(payment, null, 2));
   
@@ -206,7 +204,7 @@ export function getLastPaymentFromCashbox(debug) {
   const session = getCurrentSession();
   const url = `${resolveLocalApi()}/get_last_payment.php`;
   const body = {
-    dbNumber: store.state.settings.cashbox.dbNumber,
+    dbNumber: store.getters["settings/dbNumber"],
     dev: Boolean(debug)
   };
   const options = {
@@ -689,4 +687,19 @@ export function assert(assertion, message, throwException = false) {
 export function mathRound(value, decimals) {
   if (decimals < 0 || decimals === undefined) decimals = 2;
   return Number(Math.round(Number(value + 'e' + decimals)) + 'e-' + decimals);
+}
+
+/**
+ * Выделить телефон и префикс из строки
+ * @param {string} value
+ * @returns {{phone: string, prefix: string}}
+ */
+export function parsePhoneNumber(value) {
+  const numLength = value.length;
+  const phoneLength = 7;
+  const prefixEndIndex = numLength - phoneLength;
+  return {
+    prefix: value.substring(0, prefixEndIndex),
+    phone: value.substring(prefixEndIndex, numLength)
+  };
 }

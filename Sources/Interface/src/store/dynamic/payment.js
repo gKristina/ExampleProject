@@ -19,7 +19,7 @@ import { PAYMENT } from "@/helpers/constants/payment";
 import { GoodsListItem } from "@/helpers/mappers/GoodsListItem";
 import Vue from 'vue';
 
-const state = () => ({
+const getDefaultPaymentState = () => ({
   is: false,
   info: null,
   success: false,
@@ -39,8 +39,11 @@ const state = () => ({
   combo: null,
   autoFinishCalled: false,
   cashboxMode: CASHBOX_MODE.LEGACY,
-  cashConfirmDelay: 9 * 1000,
+  cashConfirmDelay: isTerminal() ? 9 * 1000 : 400,
+  additionalParameters: null
 });
+
+const state = getDefaultPaymentState();
 
 const getters = {
   remainingSum: state => {
@@ -583,6 +586,13 @@ const actions = {
     } else {
       log.warn('Нельзя внести отладочную сумму вне режима отладки');
     }
+  },
+  setSumToPay({ commit }, sum) {
+    commit('SET_SUM_TO_PAY', sum);
+  },
+  
+  clearPaymentState({ commit }) {
+    commit('CLEAR_PAYMENT_STATE');
   }
 };
 
@@ -592,6 +602,9 @@ const mutations = {
   },
   SET_TYPE(state, type) {
     state.type = type;
+  },
+  SET_SUM_TO_PAY(state, sum) {
+    state.sumToPay = sum;
   },
   SET_CARD_SUCCESS(state) {
     state.success = true;
@@ -630,6 +643,10 @@ const mutations = {
   DEBUG_ADD_INPUT_SUM(state, sum) {
     state.sum.input += sum;
   },
+  CLEAR_PAYMENT_STATE(state) {
+    Object.assign(state, getDefaultPaymentState());
+    log.step(`Очищен модуль стора: payment`);
+  }
 };
 
 export default {

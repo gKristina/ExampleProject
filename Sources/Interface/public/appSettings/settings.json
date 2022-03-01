@@ -1,11 +1,11 @@
 {
   "debug": {
-    "on": 1,
-    "mock": 1,
+    "on": 0,
+    "mock": 0,
     "devIntegration": 0,
     "integration": {
       "A": "",
-      "B": "",
+      "B": "http://localhost:5000/clientsManagement/",
       "C": "",
       "D": "",
       "E": "",

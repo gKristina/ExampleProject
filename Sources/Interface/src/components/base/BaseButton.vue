@@ -8,6 +8,7 @@
         [$style.main]: $attrs.hasOwnProperty('main'),
         [$style.next]: $attrs.hasOwnProperty('next'),
         [$style.card]: $attrs.hasOwnProperty('card'),
+        [$style.modal]: $attrs.hasOwnProperty('modal'),
       }
     ]"
     v-bind="$attrs"
@@ -98,6 +99,14 @@
     &.active {
       background-color: $ecAccentLight;
       color: $ecMainLight;
+    }
+    
+    &.modal {
+      width: 313px;
+      height: 115px;
+      color: $ecMainLight;
+      background-color: $ecAccentDark;
+    
     }
   }
 </style>
