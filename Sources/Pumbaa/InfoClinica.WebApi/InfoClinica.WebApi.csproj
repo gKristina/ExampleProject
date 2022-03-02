@@ -6,6 +6,10 @@
     <AssemblyName>ECash.$(MSBuildProjectName)</AssemblyName>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="11.0.1" />
     <PackageReference Include="ECash.Rafiki.Abstraction" Version="1.0.0.12" />
