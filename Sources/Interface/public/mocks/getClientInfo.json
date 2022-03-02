@@ -1,0 +1,55 @@
+{
+  "result": [
+    {
+      "code": 1,
+      "lastName": "Красный",
+      "firstName": "Помидор",
+      "middleName": "Помидоров",
+      "fullName": "Красный Помидор Помидоров"
+    },
+    {
+      "code": 2,
+      "lastName": "Фамилия",
+      "firstName": "Второй",
+      "middleName": "Клиент",
+      "fullName": "Фамилия Второй Клиент"
+    },
+    {
+      "code": 4,
+      "lastName": "ФамилияОченьДлинная",
+      "firstName": "Третий",
+      "middleName": "Клиент",
+      "fullName": "ФамилияОченьДлинная Третий Клиент"
+    },
+    {
+      "code": 5,
+      "lastName": "Фамилия",
+      "firstName": "Третий",
+      "middleName": "Клиент",
+      "fullName": "Фамилия Третий Клиент"
+    },
+    {
+      "code": 11,
+      "lastName": "Фамилия",
+      "firstName": "Третий",
+      "middleName": "Клиент",
+      "fullName": "Фамилия Третий Клиент"
+    },
+    {
+      "code": 66,
+      "lastName": "Фамилия",
+      "firstName": "Третий",
+      "middleName": "Клиент",
+      "fullName": "Фамилия Третий Клиент"
+    },
+    {
+      "code": 32,
+      "lastName": "Фамилия",
+      "firstName": "Третий",
+      "middleName": "Клиент",
+      "fullName": "Фамилия Третий Клиент"
+    }
+  ],
+  "success": true,
+  "error": ""
+}

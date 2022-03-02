@@ -1,0 +1,75 @@
+{
+  "debug": {
+    "on": 0,
+    "mock": 0,
+    "devIntegration": 0,
+    "integration": {
+      "A": "",
+      "B": "http://localhost:5000/clientsManagement/",
+      "C": "",
+      "D": "",
+      "E": "",
+      "F": ""
+    }
+  },
+  "log": {
+    "on": 1,
+    "step": 1,
+    "warning": 1,
+    "exception": 1,
+    "debug": 1
+  },
+  "gateId": 755248,
+  "timeout": 60000,
+  "clock": true,
+  "payment": {
+    "allowChange": false,
+    "allowPartial": {
+      "cash": false,
+      "card": false
+    },
+    "autoFinish": false,
+    "getAllInfo": false,
+    "combo": false,
+    "defaults": {
+      "taxGroup": 4,
+      "typeSign": 4,
+      "itemSign": 1
+    },
+    "cashboxMode": "legacy",
+    "online": {
+      "settings": {
+        "auth": {
+          "companyId": 0,
+          "userLogin": "",
+          "password": ""
+        },
+        "data": {
+          "getFiscalData": true,
+          "getCheckLink": false,
+          "getQRCode": false
+        },
+        "database": {
+          "username": "",
+          "password": "",
+          "database": ""
+        },
+        "check": {
+          "taxSystemType": 1
+        }
+      }
+    }
+  },
+  "refund": {
+    "getAllInfo": false,
+    "defaults": {
+      "taxGroup": 1,
+      "typeSign": 4,
+      "itemSign": 1
+    }
+  },
+  "cashbox": {
+    "debug": false,
+    "dbNumber": 0
+  }
+}

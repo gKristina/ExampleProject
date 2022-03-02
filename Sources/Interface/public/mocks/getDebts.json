@@ -1,0 +1,18 @@
+{
+  "result": [
+    {
+      "orderCode": 2,
+      "treatmentCode": 2,
+      "treatmentDate": "2021-10-19T00:00:00",
+      "debtDaysCount": 122,
+      "doctorCode": 100450,
+      "clientCode": 1,
+      "fullName": "Тест Тест Тест",
+      "doctorName": "Агафонова О.М",
+      "treatmentAmount": 350,
+      "debtAmount": 350
+    }
+  ],
+  "success": true,
+  "error": ""
+}

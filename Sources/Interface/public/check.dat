@@ -1,0 +1,16 @@
+{dealer}, ИНН:{CompanyInfoData1}{br}
+{dealeraddress}{br}
+Адрес терминала: {address}{br}
+Телефон тех. поддержки: {phone}{br}
+---------------------------------------{br}
+Дата:{date} Терминал: {terminal_number}{br}
+Терминал в ПС:{terminal_number_system}{br}
+Номер сессии: {doc}{br}
+Оплата услуг: {gate}{br}
+Поставщик услуг: {gate_information}{br}{onlinemode}
+Внесено     : {Summ_Client}руб.{br}
+Комиссия    : {comission}руб.{br}
+К зачислению: {Summ_Gate}руб.{br}
+{data}
+---------------------------------------{br}
+ Сохраняйте чек до зачисления средств!
