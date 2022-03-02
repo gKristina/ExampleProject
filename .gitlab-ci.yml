@@ -1,0 +1,37 @@
+variables:
+  INFO_VERSION: "$VERSION_MAJOR.$VERSION_MINOR"
+  FILE_VERSION: "$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH.$CI_PIPELINE_IID"
+  PACKAGE_VERSION: "$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH$VERSION_SUFFIX.$CI_PIPELINE_IID"
+  PACKAGE_ZIP: "ECash.InfoClinica.WebApi.$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH$VERSION_SUFFIX.$CI_PIPELINE_IID.zip"
+  PACKAGE_SYMBOLS_ZIP: "ECash.InfoClinica.WebApi.$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH$VERSION_SUFFIX.$CI_PIPELINE_IID.symbols.zip"
+
+stages:
+  - build
+  - deploy
+
+build:
+  image: mcr.microsoft.com/dotnet/sdk:5.0
+  tags:
+    - windows
+  stage: build
+  before_script:
+    - 'dotnet restore Sources\Pumbaa\InfoClinica.sln'
+  script:
+    - 'msbuild -m -p:Configuration=Release -p:InformationalVersion=$INFO_VERSION -p:PackageVersion=$PACKAGE_VERSION -p:FileVersion=$FILE_VERSION Sources\Pumbaa\InfoClinica.sln'
+    - 'Get-ChildItem -Path "Sources/Pumbaa/InfoClinica.WebApi/bin/Release/net5.0/" -Exclude @("*.pdb", "*.dev.json") | Compress-Archive -DestinationPath "Sources/Pumbaa/InfoClinica.WebApi/bin/Release/net5.0/$PACKAGE_ZIP"'
+    - 'Compress-Archive -DestinationPath "Sources/Pumbaa/InfoClinica.WebApi/bin/Release/net5.0/$PACKAGE_SYMBOLS_ZIP" -Path "Sources/Pumbaa/InfoClinica.WebApi/bin/Release/net5.0/*.pdb"'
+  artifacts:
+    paths:
+      - Sources/Pumbaa/InfoClinica.WebApi/bin/Release/net5.0/*.zip
+
+publish:
+  stage: deploy
+  when: manual
+  tags:
+    - windows
+  dependencies:
+    - build
+  script:
+    - 'Invoke-WebRequest -Method "POST" -Headers @{ "PRIVATE-TOKEN" = $ACCESS_TOKEN } -UseBasicParsing -Uri "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/repository/tags?tag_name=$PACKAGE_VERSION&ref=$CI_COMMIT_SHA"'
+    - 'Invoke-WebRequest -UseBasicParsing -Method "POST" -Uri "$PROGET_ASSET_FEED_URL/$PACKAGE_ZIP" -InFile "Sources/Pumbaa/InfoClinica.WebApi/bin/Release/net5.0/$PACKAGE_ZIP"'
+    - 'Invoke-WebRequest -UseBasicParsing -Method "POST" -Uri "$PROGET_ASSET_FEED_URL/$PACKAGE_SYMBOLS_ZIP" -InFile "Sources/Pumbaa/InfoClinica.WebApi/bin/Release/net5.0/$PACKAGE_SYMBOLS_ZIP"'

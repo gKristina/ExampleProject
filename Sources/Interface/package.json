@@ -1,0 +1,136 @@
+{
+  "name": "vue-legacy",
+  "version": "0.2.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "(rd js /s/q || echo \"Нет папки js\") && (rd css /s/q || echo \"Нет папки css\") && del main.html && vue-cli-service build && ren dist\\index.html main.html && xcopy dist\\*.* /q/y/e",
+    "build-default": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.30",
+    "@fortawesome/free-regular-svg-icons": "^5.14.0",
+    "@fortawesome/free-solid-svg-icons": "^5.14.0",
+    "@fortawesome/vue-fontawesome": "^2.0.2",
+    "axios": "^0.19.2",
+    "core-js": "^2.6.5",
+    "fast-xml-parser": "^3.17.5",
+    "mitt": "^2.1.0",
+    "moment": "^2.29.1",
+    "normalize.css": "^8.0.1",
+    "persistent-websocket": "^1.0.2",
+    "portal-vue": "^2.1.7",
+    "qs": "^6.9.4",
+    "scroll-behavior-polyfill": "^2.0.13",
+    "vue": "^2.6.10",
+    "vue-keyboard": "^3.1.0",
+    "vuex": "^3.0.1"
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.10.4",
+    "@babel/plugin-proposal-optional-chaining": "^7.11.0",
+    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
+    "@vue/cli-plugin-babel": "^3.12.0",
+    "@vue/cli-plugin-eslint": "^3.12.0",
+    "@vue/cli-service": "^3.12.0",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.16.0",
+    "eslint-plugin-vue": "^5.0.0",
+    "node-sass": "^4.12.0",
+    "sass-loader": "^8.0.0",
+    "vue-template-compiler": "^2.6.10"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "browser": true,
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "globals": {
+      "window": true,
+      "log": true
+    },
+    "rules": {
+      "indent": "off",
+      "linebreak-style": [
+        "error",
+        "windows"
+      ],
+      "no-console": 0,
+      "max-len": [
+        "error",
+        {
+          "code": 170,
+          "tabWidth": 2
+        }
+      ],
+      "no-plusplus": "off",
+      "space-before-function-paren": [
+        "error",
+        {
+          "anonymous": "always",
+          "named": "never",
+          "asyncArrow": "always"
+        }
+      ],
+      "no-underscore-dangle": "off",
+      "func-names": "off",
+      "prefer-template": "off",
+      "prefer-destructuring": "off",
+      "prefer-arrow-callback": "off",
+      "no-param-reassign": "off",
+      "no-shadow": "off",
+      "no-unused-vars": "off",
+      "no-else-return": "off",
+      "comma-dangle": "off",
+      "arrow-parens": [
+        "error",
+        "as-needed"
+      ],
+      "arrow-body-style": "off",
+      "object-curly-newline": "off",
+      "vue/script-indent": [
+        "error",
+        2,
+        {
+          "baseIndent": 1,
+          "switchCase": 1,
+          "ignores": []
+        }
+      ],
+      "radix": "off",
+      "no-restricted-globals": "off",
+      "no-inner-declarations": "off",
+      "no-debugger": "off",
+      "no-ex-assign": "off",
+      "no-irregular-whitespace": "off",
+      "no-useless-escape": "off"
+    },
+    "parserOptions": {
+      "parser": "babel-eslint"
+    },
+    "overrides": [
+      {
+        "files": [
+          "*.vue"
+        ],
+        "rules": {
+          "indent": "off"
+        }
+      }
+    ]
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "ie 11"
+  ]
+}

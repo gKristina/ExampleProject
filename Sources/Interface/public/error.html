@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>ERROR</title>
+
+  <link href="servicePages.css" type="text/css" rel="stylesheet">
+
+  <script>
+    const sequence = {
+      value: [],
+      timeout: undefined,
+    };
+
+    document.addEventListener('DOMContentLoaded', function () {
+      document.getElementById('terminalNumber').innerText = extGetTerminalNumber();
+    });
+
+    function kbClick(action) {
+      const input = document.getElementsByTagName('input')[0];
+
+      switch (action) {
+      case 0:
+      case 1:
+      case 2:
+      case 3:
+      case 4:
+      case 5:
+      case 6:
+      case 7:
+      case 8:
+      case 9:
+        if (input.value.length < 5) {
+          input.value += action;
+        }
+        break;
+      case 'clear':
+        input.value = '';
+        break;
+      case 'delete':
+        input.value = input.value.substring(0, input.value.length - 1);
+        break;
+      default:
+        console.warn('Получено неизвестное действие: ' + action);
+      }
+    }
+
+    function checkSequence(sum) {
+      clearTimeout(sequence.timeout);
+
+      sequence.value.push(sum)
+      const value = sequence.value.join('');
+
+      if (value === extGetSkudSequence()) {
+        document.getElementById('popup').style.display = 'flex';
+        sequence.value = [];
+      } else {
+        sequence.timeout = setTimeout(function () {
+          sequence.value = [];
+        }, 5 * 1000);
+      }
+    }
+
+    /**
+     * Получить SKUD-последовательность
+     * @returns {number|null}
+     */
+    function extGetSkudSequence() {
+      if ('RetSecretClick' in window.external) return window.external.RetSecretClick();
+      else {
+        console.error('window.external.RetSecretClick не существует');
+        return null;
+      }
+    }
+
+    function extGetTerminalNumber() {
+      if ('external' in window && 'RetTerminalNumberSystemMini' in window.external) {
+        return window.external.RetTerminalNumberSystemMini();
+      } else {
+        return 'DEV';
+      }
+    }
+
+    function checkPass() {
+      const input = document.getElementsByTagName('input')[0];
+      const value = input.value;
+
+      input.value = '';
+
+      extCheckSkudPass(value);
+    }
+
+    /**
+     * Получить SKUD-пароль
+     * @param {string} [pass='0']
+     */
+    function extCheckSkudPass(pass) {
+      pass = pass || '0';
+      if ('InterCode' in window.external) {
+        try {
+          window.external.InterCode(pass);
+        } catch (e) {
+          // бэк выбрасывает нам ошибку, если передать пустую строку - игнорируем
+        }
+      } else console.error('window.external.InterCode не существует');
+    }
+  </script>
+</head>
+<body>
+<div class="skud top left" onclick="checkSequence(1)"></div>
+<div class="skud top right" onclick="checkSequence(2)"></div>
+<div class="skud bottom left" onclick="checkSequence(3)"></div>
+<div class="skud bottom right" onclick="checkSequence(4)"></div>
+<div class="error">
+  <p class="title">Терминал временно не работает</p>
+  <img alt="alert" src="img/alert.png">
+  <p>Терминал № <span id="terminalNumber"></span></p>
+</div>
+<div id="popup">
+  <label>
+    <input type="password" maxlength="5">
+  </label>
+  <table class="keyboard">
+    <tr>
+      <td>
+        <div class="kbButton" onclick="kbClick(1)">1</div>
+      </td>
+      <td>
+        <div class="kbButton" onclick="kbClick(2)">2</div>
+      </td>
+      <td>
+        <div class="kbButton" onclick="kbClick(3)">3</div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <div class="kbButton" onclick="kbClick(4)">4</div>
+      </td>
+      <td>
+        <div class="kbButton" onclick="kbClick(5)">5</div>
+      </td>
+      <td>
+        <div class="kbButton" onclick="kbClick(6)">6</div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <div class="kbButton" onclick="kbClick(7)">7</div>
+      </td>
+      <td>
+        <div class="kbButton" onclick="kbClick(8)">8</div>
+      </td>
+      <td>
+        <div class="kbButton" onclick="kbClick(9)">9</div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <div class="kbButton" onclick="kbClick('clear')">C</div>
+      </td>
+      <td>
+        <div class="kbButton" onclick="kbClick(0)">0</div>
+      </td>
+      <td>
+        <div class="kbButton" onclick="kbClick('delete')">&lt;</div>
+      </td>
+    </tr>
+  </table>
+  <div class="buttons">
+    <div class="button" onclick="document.location.reload(true)">Назад</div>
+    <div class="button" onclick="checkPass()">Вперёд</div>
+  </div>
+</div>
+</body>
+</html>
