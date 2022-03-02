@@ -33,5 +33,5 @@ publish:
     - build
   script:
     - 'Invoke-WebRequest -Method "POST" -Headers @{ "PRIVATE-TOKEN" = $ACCESS_TOKEN } -UseBasicParsing -Uri "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/repository/tags?tag_name=$PACKAGE_VERSION&ref=$CI_COMMIT_SHA"'
-    - 'Invoke-WebRequest -UseBasicParsing -Method "POST" -Uri "$PROGET_ASSET_FEED_URL/$PACKAGE_ZIP" -InFile "Sources/Pumbaa/InfoClinica.WebApi/bin/x86/Release/net5.0/$PACKAGE_ZIP"'
-    - 'Invoke-WebRequest -UseBasicParsing -Method "POST" -Uri "$PROGET_ASSET_FEED_URL/$PACKAGE_SYMBOLS_ZIP" -InFile "Sources/Pumbaa/InfoClinica.WebApi/bin/x86/Release/net5.0/$PACKAGE_SYMBOLS_ZIP"'
+    - 'Invoke-WebRequest -UseBasicParsing -Method "POST" -Uri "$PROGET_ASSET_FEED_URL/$PACKAGE_ZIP" -InFile "Sources/Pumbaa/InfoClinica.WebApi/bin/Release/net5.0/$PACKAGE_ZIP"'
+    - 'Invoke-WebRequest -UseBasicParsing -Method "POST" -Uri "$PROGET_ASSET_FEED_URL/$PACKAGE_SYMBOLS_ZIP" -InFile "Sources/Pumbaa/InfoClinica.WebApi/bin/Release/net5.0/$PACKAGE_SYMBOLS_ZIP"'
