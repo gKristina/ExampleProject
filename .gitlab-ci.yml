@@ -18,11 +18,11 @@ build:
     - 'dotnet restore Sources\Pumbaa\InfoClinica.sln'
   script:
     - 'msbuild -m -p:Configuration=Release -p:InformationalVersion=$INFO_VERSION -p:PackageVersion=$PACKAGE_VERSION -p:FileVersion=$FILE_VERSION Sources\Pumbaa\InfoClinica.sln'
-    - 'Get-ChildItem -Path "Sources/Pumbaa/InfoClinica.WebApi/bin/x86/Release/net5.0/" -Exclude @("*.pdb", "*.dev.json") | Compress-Archive -DestinationPath "Sources/Pumbaa/InfoClinica.WebApi/bin/x86/Release/net5.0/$PACKAGE_ZIP"'
-    - 'Compress-Archive -DestinationPath "Sources/Pumbaa/InfoClinica.WebApi/bin/x86/Release/net5.0/$PACKAGE_SYMBOLS_ZIP" -Path "Sources/Pumbaa/InfoClinica.WebApi/bin/x86/Release/net5.0/*.pdb"'
+    - 'Get-ChildItem -Path "Sources/Pumbaa/InfoClinica.WebApi/bin/Release/net5.0/" -Exclude @("*.pdb", "*.dev.json") | Compress-Archive -DestinationPath "Sources/Pumbaa/InfoClinica.WebApi/bin/Release/net5.0/$PACKAGE_ZIP"'
+    - 'Compress-Archive -DestinationPath "Sources/Pumbaa/InfoClinica.WebApi/bin/Release/net5.0/$PACKAGE_SYMBOLS_ZIP" -Path "Sources/Pumbaa/InfoClinica.WebApi/bin/Release/net5.0/*.pdb"'
   artifacts:
     paths:
-      - Sources/Pumbaa/InfoClinica.WebApi/bin/x86/Release/net5.0/*.zip
+      - Sources/Pumbaa/InfoClinica.WebApi/bin/Release/net5.0/*.zip
 
 publish:
   stage: deploy
