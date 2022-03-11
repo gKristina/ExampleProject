@@ -37,7 +37,7 @@ namespace ECash.InfoClinica.Database
             var qryClients = 
                     from c in _context.Clients
                     join p in _context.ClientPhones on c.ClientCode equals p.ClientCode
-                    where p.Phone == phone && p.Prefix == prefix
+                    where p.Phone == phone && EF.Functions.Like( p.Prefix, $"%{prefix}%")
                     select new Client
                     {
                         Code = c.ClientCode,
